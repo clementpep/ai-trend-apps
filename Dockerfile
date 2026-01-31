@@ -23,8 +23,10 @@ WORKDIR /app
 # Copy built files and dependencies
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/apps ./apps
 COPY --from=builder /app/package.json ./
+
+# Copy apps directory (may be empty initially)
+COPY --from=builder /app/apps ./apps
 
 # Environment
 ENV NODE_ENV=production
