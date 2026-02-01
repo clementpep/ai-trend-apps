@@ -23,9 +23,10 @@ interface AppInfo {
 
 /**
  * Scan the apps directory and return metadata for each app.
+ * Uses process.cwd() for consistent path resolution in both dev and production.
  */
 async function getApps(): Promise<AppInfo[]> {
-  const appsDir = join(import.meta.dir, "../../apps");
+  const appsDir = join(process.cwd(), "apps");
   const apps: AppInfo[] = [];
 
   try {
