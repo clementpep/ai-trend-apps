@@ -152,6 +152,17 @@ textarea::placeholder {
     transform: translateY(-1px) scale(0.98);
 }
 
+.primary-btn:focus,
+.secondary-btn:focus,
+.back-to-hub:focus {
+    outline: none;
+    text-decoration: none;
+}
+
+button, a.back-to-hub {
+    text-decoration: none !important;
+}
+
 .secondary-btn {
     background: rgba(255, 255, 255, 0.05);
     color: var(--text);
@@ -448,7 +459,8 @@ footer a {
 }
 
 footer a:hover {
-    text-decoration: underline;
+    color: var(--secondary);
+    text-decoration: none;
 }
 
 .footer-note {
