@@ -116,7 +116,7 @@ function renderHub(apps: AppInfo[]): string {
     <div class="empty-state">
       <div class="empty-icon">🚀</div>
       <h2>First App Coming Soon</h2>
-      <p>Tomorrow at 5:00 AM Paris time, the first AI Trend App will be automatically built and deployed here.</p>
+      <p>Tomorrow at 2:00 AM Paris time, the first AI Trend App will be automatically built and deployed here.</p>
       <div class="countdown-hint">
         <span class="pulse-dot"></span>
         <span>Monitoring AI trends...</span>
@@ -131,7 +131,7 @@ function renderHub(apps: AppInfo[]): string {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Trend Apps — Daily AI-Powered Applications</title>
-  <meta name="description" content="Every day at 5:00 AM, an AI agent builds a new application inspired by viral AI trends.">
+  <meta name="description" content="Every day at 2:00 AM, an AI agent builds a new application inspired by viral AI trends.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -270,18 +270,37 @@ function renderHub(apps: AppInfo[]): string {
     }
 
     .stat-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
+      position: relative;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: var(--radius-lg);
       padding: 24px 40px;
       text-align: center;
       backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s ease;
     }
 
     .stat-card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-2px);
+      border-color: rgba(102, 126, 234, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+    }
+
+    .stat-card:hover::before {
+      left: 100%;
     }
 
     .stat-number {
@@ -329,8 +348,10 @@ function renderHub(apps: AppInfo[]): string {
 
     .app-card {
       position: relative;
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: var(--radius-xl);
       padding: 28px;
       text-decoration: none;
@@ -344,35 +365,58 @@ function renderHub(apps: AppInfo[]): string {
     .app-card::before {
       content: '';
       position: absolute;
-      inset: 0;
-      background: var(--gradient-card);
+      inset: -1px;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3), rgba(100, 210, 255, 0.3));
+      border-radius: var(--radius-xl);
       opacity: 0;
       transition: opacity 0.4s ease;
-      border-radius: var(--radius-xl);
+      z-index: -1;
+    }
+
+    .app-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: calc(var(--radius-xl) - 1px);
+      z-index: -1;
     }
 
     .app-card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-4px);
+      border-color: transparent;
+      transform: translateY(-6px) scale(1.01);
       box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.3),
-        var(--shadow-glow);
+        0 25px 50px rgba(0, 0, 0, 0.4),
+        0 0 40px rgba(102, 126, 234, 0.15),
+        0 0 80px rgba(100, 210, 255, 0.1);
     }
 
     .app-card:hover::before {
       opacity: 1;
+      animation: borderGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes borderGlow {
+      0%, 100% { filter: hue-rotate(0deg); }
+      50% { filter: hue-rotate(30deg); }
     }
 
     .card-glow {
       position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle at center, rgba(102, 126, 234, 0.1) 0%, transparent 50%);
+      top: -100%;
+      left: -100%;
+      width: 300%;
+      height: 300%;
+      background: conic-gradient(from 0deg, transparent, rgba(102, 126, 234, 0.15), transparent, rgba(100, 210, 255, 0.15), transparent);
       opacity: 0;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.6s ease;
       pointer-events: none;
+      animation: rotate 8s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
     .app-card:hover .card-glow {
@@ -615,7 +659,7 @@ function renderHub(apps: AppInfo[]): string {
       </div>
       <h1>Daily AI-Powered<br>Applications</h1>
       <p class="subtitle">
-        Every day at <span class="highlight">5:00 AM</span>, an AI agent scans for viral AI trends, 
+        Every day at <span class="highlight">2:00 AM</span>, an AI agent scans for viral AI trends, 
         builds a functional application, and deploys it automatically.
       </p>
     </header>
@@ -640,7 +684,7 @@ function renderHub(apps: AppInfo[]): string {
         <div class="footer-brand">
           Built with 🦞 <a href="https://github.com/openclaw/openclaw" target="_blank">OpenClaw</a>
         </div>
-        <div class="footer-schedule">New app every day at 5:00 AM Paris time</div>
+        <div class="footer-schedule">New app every day at 2:00 AM Paris time</div>
       </div>
     </footer>
   </div>
@@ -675,8 +719,49 @@ app.get("/api/apps", async (c) => {
   return c.json(apps);
 });
 
-// Serve static files from apps directories
-app.use("/apps/*", serveStatic({ root: "./" }));
+// Serve static files from apps directories with custom handler
+// (serveStatic has issues with bundled Bun output)
+app.get("/apps/*", async (c) => {
+  const path = c.req.path;
+  const filePath = join(process.cwd(), path);
+  
+  try {
+    const file = Bun.file(filePath);
+    if (await file.exists()) {
+      const content = await file.arrayBuffer();
+      const ext = filePath.split('.').pop()?.toLowerCase() || '';
+      const mimeTypes: Record<string, string> = {
+        'html': 'text/html; charset=utf-8',
+        'css': 'text/css; charset=utf-8',
+        'js': 'application/javascript; charset=utf-8',
+        'json': 'application/json; charset=utf-8',
+        'png': 'image/png',
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'gif': 'image/gif',
+        'svg': 'image/svg+xml',
+        'ico': 'image/x-icon',
+      };
+      return c.body(content, 200, {
+        'Content-Type': mimeTypes[ext] || 'application/octet-stream',
+      });
+    }
+    
+    // Try index.html for directories
+    const indexPath = join(filePath, 'index.html');
+    const indexFile = Bun.file(indexPath);
+    if (await indexFile.exists()) {
+      const content = await indexFile.arrayBuffer();
+      return c.body(content, 200, {
+        'Content-Type': 'text/html; charset=utf-8',
+      });
+    }
+    
+    return c.notFound();
+  } catch {
+    return c.notFound();
+  }
+});
 
 // Start server
 const port = parseInt(process.env.PORT || "3000");
