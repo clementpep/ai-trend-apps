@@ -1,6 +1,6 @@
 /**
- * Prompt Polish - Prompt Analyzer
- * Analyzes prompts using heuristics and provides improvement suggestions
+ * Prompt Polish - AI-Powered Prompt Analyzer
+ * Uses GPT-4o-mini for expert analysis with heuristic fallback
  */
 
 // DOM Elements
@@ -19,54 +19,150 @@ const copyBtn = document.getElementById('copy-btn');
 // Analysis categories
 const categories = ['clarity', 'specificity', 'structure', 'context'];
 
-// Vague words that indicate lack of specificity
+// =============================================================================
+// AI-POWERED ANALYSIS (Primary)
+// =============================================================================
+
+/**
+ * Expert system prompt for prompt analysis
+ * Uses advanced prompting techniques: persona, chain of thought, structured output
+ */
+const EXPERT_SYSTEM_PROMPT = `You are an elite Prompt Engineer with 10+ years of experience crafting prompts for large language models. You've worked at OpenAI, Anthropic, and Google DeepMind.
+
+Your expertise includes:
+- Prompt optimization for clarity, specificity, and effectiveness
+- Chain-of-thought prompting techniques
+- Few-shot learning optimization
+- Output formatting and structure
+- Context engineering and persona design
+
+TASK: Analyze the user's prompt and provide expert feedback.
+
+ANALYSIS PROCESS (think step by step):
+1. First, identify the user's apparent intent
+2. Evaluate clarity: Is the goal unambiguous? Are there vague terms?
+3. Evaluate specificity: Are requirements precise? Are constraints defined?
+4. Evaluate structure: Is it well-organized? Does it guide the AI logically?
+5. Evaluate context: Is there enough background? Is the persona/audience clear?
+6. Identify the top 3-5 improvements that would have the most impact
+7. Rewrite the prompt applying all best practices
+
+OUTPUT FORMAT (respond in valid JSON only, no markdown):
+{
+  "scores": {
+    "clarity": <0-100>,
+    "specificity": <0-100>,
+    "structure": <0-100>,
+    "context": <0-100>,
+    "overall": <0-100>
+  },
+  "analysis": {
+    "intent": "<what the user wants to achieve>",
+    "strengths": ["<strength 1>", "<strength 2>"],
+    "weaknesses": ["<weakness 1>", "<weakness 2>"]
+  },
+  "suggestions": [
+    "<actionable suggestion 1>",
+    "<actionable suggestion 2>",
+    "<actionable suggestion 3>"
+  ],
+  "improvedPrompt": "<the rewritten, optimized version of the prompt>"
+}`;
+
+/**
+ * Call the AI API for expert analysis
+ * @param {string} prompt - The prompt to analyze
+ * @returns {Promise<Object|null>} Analysis results or null if failed
+ */
+async function analyzeWithAI(prompt) {
+    try {
+        const response = await fetch('/api/ai/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                messages: [
+                    { role: 'system', content: EXPERT_SYSTEM_PROMPT },
+                    { role: 'user', content: `Analyze this prompt:\n\n"${prompt}"` }
+                ],
+                model: 'gpt-4o-mini',
+                max_tokens: 800
+            })
+        });
+
+        if (!response.ok) {
+            console.warn('AI API failed, falling back to heuristics');
+            return null;
+        }
+
+        const data = await response.json();
+        
+        if (!data.content) {
+            return null;
+        }
+
+        // Parse JSON response (handle potential markdown code blocks)
+        let jsonStr = data.content.trim();
+        if (jsonStr.startsWith('```')) {
+            jsonStr = jsonStr.replace(/```json?\n?/g, '').replace(/```$/g, '').trim();
+        }
+
+        const analysis = JSON.parse(jsonStr);
+        
+        return {
+            overall: analysis.scores.overall,
+            clarity: { score: analysis.scores.clarity, detail: '' },
+            specificity: { score: analysis.scores.specificity, detail: '' },
+            structure: { score: analysis.scores.structure, detail: '' },
+            context: { score: analysis.scores.context, detail: '' },
+            suggestions: analysis.suggestions,
+            improvedPrompt: analysis.improvedPrompt,
+            analysis: analysis.analysis,
+            aiPowered: true
+        };
+    } catch (error) {
+        console.warn('AI analysis failed:', error);
+        return null;
+    }
+}
+
+// =============================================================================
+// HEURISTIC ANALYSIS (Fallback)
+// =============================================================================
+
 const vagueWords = [
     'something', 'stuff', 'thing', 'things', 'good', 'nice', 'better', 
     'some', 'maybe', 'probably', 'kind of', 'sort of', 'like', 'whatever',
     'etc', 'and so on', 'you know', 'basically'
 ];
 
-// Action words that indicate clear intent
 const actionWords = [
     'create', 'write', 'generate', 'build', 'design', 'implement', 'develop',
     'explain', 'analyze', 'summarize', 'compare', 'list', 'describe', 'outline',
     'convert', 'translate', 'fix', 'debug', 'optimize', 'refactor', 'review'
 ];
 
-// Context indicators
 const contextIndicators = [
     'using', 'with', 'in', 'for', 'because', 'so that', 'which', 'where',
     'when', 'how', 'why', 'target', 'audience', 'purpose', 'goal'
 ];
 
-// Structure indicators
 const structureIndicators = [
     '1.', '2.', '3.', '-', '•', '*', 'first', 'second', 'then', 'finally',
     'step', 'requirement', 'constraint', 'format', 'example', 'output'
 ];
 
-/**
- * Main analysis function
- * @param {string} prompt - The prompt to analyze
- * @returns {Object} Analysis results
- */
-function analyzePrompt(prompt) {
+function analyzeWithHeuristics(prompt) {
     const trimmed = prompt.trim();
-    
-    if (!trimmed) {
-        return null;
-    }
+    if (!trimmed) return null;
 
-    const words = trimmed.toLowerCase().split(/\s+/);
+    const words = trimmed.toLowerCase().split(/\\s+/);
     const sentences = trimmed.split(/[.!?]+/).filter(s => s.trim());
     
-    // Calculate individual scores
     const clarity = calculateClarity(trimmed, words, sentences);
     const specificity = calculateSpecificity(trimmed, words);
     const structure = calculateStructure(trimmed, words);
     const context = calculateContext(trimmed, words);
     
-    // Overall score (weighted average)
     const overallScore = Math.round(
         (clarity.score * 0.25) + 
         (specificity.score * 0.30) + 
@@ -74,10 +170,7 @@ function analyzePrompt(prompt) {
         (context.score * 0.25)
     );
     
-    // Generate suggestions
     const suggestions = generateSuggestions(trimmed, clarity, specificity, structure, context);
-    
-    // Generate improved version if score is low
     const improvedPrompt = overallScore < 70 ? generateImprovedPrompt(trimmed, suggestions) : null;
     
     return {
@@ -87,357 +180,305 @@ function analyzePrompt(prompt) {
         structure,
         context,
         suggestions,
-        improvedPrompt
+        improvedPrompt,
+        aiPowered: false
     };
 }
 
-/**
- * Calculate clarity score
- */
 function calculateClarity(prompt, words, sentences) {
-    let score = 50; // Base score
+    let score = 50;
     const issues = [];
     
-    // Length check
-    if (words.length < 5) {
-        score -= 20;
-        issues.push('Too short - provide more detail');
-    } else if (words.length > 10 && words.length <= 30) {
-        score += 20;
-    } else if (words.length > 30 && words.length <= 100) {
-        score += 30;
-    } else if (words.length > 100) {
-        score += 20; // Long is good but might be verbose
-    }
-    
-    // Check for action verbs at start
-    const firstWord = words[0];
-    if (actionWords.some(a => firstWord.includes(a))) {
+    // Check for action words
+    const hasActionWord = actionWords.some(word => words.includes(word));
+    if (hasActionWord) {
         score += 20;
     } else {
-        issues.push('Start with an action verb (create, write, explain...)');
+        issues.push('No clear action verb');
     }
     
-    // Check for question marks (questions are clear)
-    if (prompt.includes('?')) {
+    // Check prompt length
+    if (words.length < 5) {
+        score -= 20;
+        issues.push('Too short');
+    } else if (words.length >= 10 && words.length <= 50) {
+        score += 15;
+    } else if (words.length > 100) {
+        score -= 10;
+        issues.push('Very long');
+    }
+    
+    // Check for questions
+    if (prompt.includes('?') && sentences.length <= 2) {
         score += 10;
     }
     
-    // Penalize all caps
-    if (prompt === prompt.toUpperCase() && prompt.length > 10) {
-        score -= 10;
-        issues.push('Avoid ALL CAPS - it reduces readability');
-    }
+    score = Math.max(0, Math.min(100, score));
     
     return {
-        score: clamp(score, 0, 100),
-        detail: issues.length > 0 ? issues[0] : 'Clear and well-formed prompt'
+        score,
+        detail: issues.length > 0 ? issues.join(', ') : 'Clear intent detected'
     };
 }
 
-/**
- * Calculate specificity score
- */
 function calculateSpecificity(prompt, words) {
     let score = 50;
     const issues = [];
     
     // Check for vague words
-    const vagueCount = words.filter(w => vagueWords.includes(w)).length;
-    if (vagueCount > 0) {
-        score -= vagueCount * 10;
-        issues.push(`Avoid vague terms (found: ${vagueCount})`);
-    }
+    const vagueCount = vagueWords.filter(word => 
+        prompt.toLowerCase().includes(word)
+    ).length;
     
-    // Check for numbers/quantities (specific)
-    if (/\d+/.test(prompt)) {
-        score += 15;
-    }
-    
-    // Check for quoted examples
-    if (prompt.includes('"') || prompt.includes("'") || prompt.includes('`')) {
-        score += 15;
-    }
-    
-    // Check for specific technologies/tools mentioned
-    const techPatterns = /\b(python|javascript|react|api|json|html|css|sql|typescript|node|docker|aws|azure)\b/i;
-    if (techPatterns.test(prompt)) {
+    if (vagueCount === 0) {
         score += 20;
+    } else {
+        score -= vagueCount * 10;
+        issues.push(`${vagueCount} vague term(s)`);
     }
     
-    // Check for format specifications
-    if (/\b(format|output|return|give me|provide)\b/i.test(prompt)) {
-        score += 10;
+    // Check for numbers/specifics
+    const hasNumbers = /\\d+/.test(prompt);
+    if (hasNumbers) {
+        score += 15;
     }
     
-    // Longer prompts tend to be more specific
-    if (words.length > 20) {
-        score += 10;
+    // Check for quotes (examples)
+    const hasExamples = prompt.includes('"') || prompt.includes("'") || prompt.includes('`');
+    if (hasExamples) {
+        score += 15;
     }
+    
+    score = Math.max(0, Math.min(100, score));
     
     return {
-        score: clamp(score, 0, 100),
-        detail: issues.length > 0 ? issues[0] : 'Good level of specificity'
+        score,
+        detail: issues.length > 0 ? issues.join(', ') : 'Good specificity'
     };
 }
 
-/**
- * Calculate structure score
- */
 function calculateStructure(prompt, words) {
     let score = 40;
     const issues = [];
     
-    // Check for list/numbered items
-    const hasLists = structureIndicators.some(s => prompt.includes(s));
-    if (hasLists) {
-        score += 30;
+    // Check for structure indicators
+    const structureCount = structureIndicators.filter(indicator => 
+        prompt.toLowerCase().includes(indicator.toLowerCase())
+    ).length;
+    
+    if (structureCount >= 3) {
+        score += 40;
+    } else if (structureCount >= 1) {
+        score += 20;
+    } else {
+        issues.push('No structural elements');
     }
     
-    // Check for line breaks (structured prompt)
-    if (prompt.includes('\n')) {
+    // Check for line breaks
+    const lineBreaks = (prompt.match(/\\n/g) || []).length;
+    if (lineBreaks >= 2) {
         score += 20;
     }
     
-    // Check for section headers (e.g., "Context:", "Requirements:")
-    if (/[A-Z][a-z]+:/g.test(prompt)) {
-        score += 20;
-    }
-    
-    // Single sentence is less structured
-    if (!prompt.includes('.') && !prompt.includes('\n') && words.length < 20) {
-        score -= 10;
-        issues.push('Consider breaking into multiple points');
-    }
-    
-    // Check for examples
-    if (/\b(example|e\.g\.|for instance|such as)\b/i.test(prompt)) {
-        score += 15;
-    }
+    score = Math.max(0, Math.min(100, score));
     
     return {
-        score: clamp(score, 0, 100),
-        detail: issues.length > 0 ? issues[0] : 'Well-structured prompt'
+        score,
+        detail: issues.length > 0 ? issues.join(', ') : 'Well structured'
     };
 }
 
-/**
- * Calculate context score
- */
 function calculateContext(prompt, words) {
     let score = 40;
     const issues = [];
     
     // Check for context indicators
-    const contextCount = contextIndicators.filter(c => 
-        prompt.toLowerCase().includes(c)
+    const contextCount = contextIndicators.filter(indicator => 
+        words.includes(indicator)
     ).length;
     
-    if (contextCount > 0) {
-        score += contextCount * 8;
+    if (contextCount >= 3) {
+        score += 40;
+    } else if (contextCount >= 1) {
+        score += 20;
     } else {
-        issues.push('Add context (who, what, why, how)');
+        issues.push('Limited context');
     }
     
-    // Check for role/persona setting
-    if (/\b(as a|act as|you are|pretend|role)\b/i.test(prompt)) {
-        score += 15;
+    // Check for role/persona
+    const hasPersona = /you are|act as|pretend|imagine|as a/i.test(prompt);
+    if (hasPersona) {
+        score += 20;
     }
     
-    // Check for constraints/requirements
-    if (/\b(must|should|need to|require|constraint|limit)\b/i.test(prompt)) {
-        score += 10;
-    }
-    
-    // Check for audience specification
-    if (/\b(for|audience|user|reader|beginner|expert|developer)\b/i.test(prompt)) {
-        score += 10;
-    }
+    score = Math.max(0, Math.min(100, score));
     
     return {
-        score: clamp(score, 0, 100),
-        detail: issues.length > 0 ? issues[0] : 'Good contextual information'
+        score,
+        detail: issues.length > 0 ? issues.join(', ') : 'Good context'
     };
 }
 
-/**
- * Generate improvement suggestions
- */
 function generateSuggestions(prompt, clarity, specificity, structure, context) {
     const suggestions = [];
-    const words = prompt.toLowerCase().split(/\s+/);
     
-    // Always start with what's good
-    if (clarity.score >= 70) {
-        suggestions.push({ text: '✓ Clear and direct language', good: true });
+    if (clarity.score < 60) {
+        suggestions.push('Start with a clear action verb (create, write, explain, analyze...)');
     }
     
-    // Clarity suggestions
-    if (clarity.score < 70) {
-        if (!actionWords.some(a => words[0]?.includes(a))) {
-            suggestions.push({ 
-                text: 'Start with an action verb like "Create", "Write", "Explain", or "Generate"', 
-                good: false 
-            });
-        }
+    if (specificity.score < 60) {
+        suggestions.push('Replace vague words with specific requirements');
+        suggestions.push('Add concrete examples or expected output format');
     }
     
-    // Specificity suggestions
-    if (specificity.score < 70) {
-        const vagueFound = vagueWords.filter(v => prompt.toLowerCase().includes(v));
-        if (vagueFound.length > 0) {
-            suggestions.push({ 
-                text: `Replace vague terms like "${vagueFound[0]}" with specific descriptions`, 
-                good: false 
-            });
-        }
-        
-        if (!/\d+/.test(prompt)) {
-            suggestions.push({ 
-                text: 'Add specific numbers or quantities (e.g., "5 examples", "in 200 words")', 
-                good: false 
-            });
-        }
+    if (structure.score < 60) {
+        suggestions.push('Use numbered lists or bullet points for multiple requirements');
+        suggestions.push('Separate context, task, and output format into distinct sections');
     }
     
-    // Structure suggestions  
-    if (structure.score < 70) {
-        if (!prompt.includes('\n') && words.length > 15) {
-            suggestions.push({ 
-                text: 'Break your prompt into sections with line breaks or bullet points', 
-                good: false 
-            });
-        }
-        
-        if (!/\b(example|e\.g\.)\b/i.test(prompt)) {
-            suggestions.push({ 
-                text: 'Include an example of what you want the output to look like', 
-                good: false 
-            });
-        }
+    if (context.score < 60) {
+        suggestions.push('Add context: who is the audience? what is the purpose?');
+        suggestions.push('Consider adding a persona or role for the AI');
     }
     
-    // Context suggestions
-    if (context.score < 70) {
-        if (!/\b(for|audience|user)\b/i.test(prompt)) {
-            suggestions.push({ 
-                text: 'Specify who the output is for (e.g., "for beginners", "for a technical audience")', 
-                good: false 
-            });
-        }
-        
-        if (!/\b(because|so that|purpose|goal)\b/i.test(prompt)) {
-            suggestions.push({ 
-                text: 'Add the purpose or goal of your request', 
-                good: false 
-            });
-        }
+    if (suggestions.length === 0) {
+        suggestions.push('Your prompt is well-crafted! Consider A/B testing variations.');
     }
     
-    // If everything is good
-    if (suggestions.length === 0 || suggestions.every(s => s.good)) {
-        suggestions.push({ text: '✓ Great prompt! Ready to use.', good: true });
-    }
-    
-    return suggestions;
+    return suggestions.slice(0, 5);
 }
 
-/**
- * Generate an improved version of the prompt
- */
 function generateImprovedPrompt(original, suggestions) {
-    // This is a simplified improvement - in a real app, you might use an LLM
-    let improved = original.trim();
-    const words = improved.split(/\s+/);
+    let improved = original;
     
     // Add action verb if missing
-    if (!actionWords.some(a => words[0]?.toLowerCase().includes(a))) {
-        // Determine likely intent
-        if (/code|function|script|program/i.test(improved)) {
-            improved = 'Write ' + improved;
-        } else if (/explain|what|how|why/i.test(improved)) {
-            improved = 'Explain ' + improved;
-        } else {
-            improved = 'Create ' + improved;
-        }
+    if (!actionWords.some(word => original.toLowerCase().includes(word))) {
+        improved = 'Please ' + improved.charAt(0).toLowerCase() + improved.slice(1);
     }
     
-    // Add structure if it's a long single sentence
-    if (!improved.includes('\n') && words.length > 20) {
-        improved = improved + '\n\nRequirements:\n- Be specific\n- Provide examples';
-    }
-    
-    // Add context hint if missing
-    if (!/\b(for|audience|purpose)\b/i.test(improved)) {
-        improved = improved + '\n\nContext: [Add your target audience and purpose here]';
+    // Add structure hint
+    if (!improved.includes('\\n') && improved.length > 50) {
+        improved += '\\n\\nPlease structure your response clearly.';
     }
     
     return improved;
 }
 
-/**
- * Utility: Clamp value between min and max
- */
-function clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
-}
+// =============================================================================
+// MAIN ANALYSIS FUNCTION
+// =============================================================================
 
 /**
- * Get score level (good/medium/poor)
+ * Main analysis function - tries AI first, falls back to heuristics
  */
-function getScoreLevel(score) {
-    if (score >= 70) return 'good';
-    if (score >= 40) return 'medium';
-    return 'poor';
+async function analyzePrompt(prompt) {
+    const trimmed = prompt.trim();
+    if (!trimmed) return null;
+    
+    // Try AI analysis first
+    const aiResult = await analyzeWithAI(trimmed);
+    if (aiResult) {
+        return aiResult;
+    }
+    
+    // Fallback to heuristics
+    return analyzeWithHeuristics(trimmed);
 }
 
-/**
- * Get score description
- */
-function getScoreDescription(score) {
-    if (score >= 90) return 'Excellent! This prompt is well-crafted and specific.';
-    if (score >= 70) return 'Good prompt! Minor improvements possible.';
-    if (score >= 50) return 'Decent start, but could use more detail.';
-    if (score >= 30) return 'Needs work. Add more specificity and context.';
-    return 'Very vague. Consider completely rewriting with more detail.';
-}
+// =============================================================================
+// UI HANDLERS
+// =============================================================================
 
-/**
- * Update the UI with analysis results
- */
-function updateUI(results) {
-    if (!results) {
-        resultsSection.classList.add('hidden');
+promptInput.addEventListener('input', () => {
+    charCount.textContent = promptInput.value.length;
+});
+
+analyzeBtn.addEventListener('click', async () => {
+    const prompt = promptInput.value;
+    
+    if (!prompt.trim()) {
+        alert('Please enter a prompt to analyze');
         return;
     }
     
+    // Show loading state
+    analyzeBtn.disabled = true;
+    analyzeBtn.innerHTML = '<span class="btn-icon">⏳</span> Analyzing...';
+    
+    try {
+        const results = await analyzePrompt(prompt);
+        
+        if (!results) {
+            alert('Could not analyze the prompt');
+            return;
+        }
+        
+        displayResults(results);
+    } catch (error) {
+        console.error('Analysis error:', error);
+        alert('Analysis failed. Please try again.');
+    } finally {
+        analyzeBtn.disabled = false;
+        analyzeBtn.innerHTML = '<span class="btn-icon">🔍</span> Analyze Prompt';
+    }
+});
+
+function displayResults(results) {
     resultsSection.classList.remove('hidden');
     
-    // Update score circle with animation
-    const scorePercent = results.overall;
-    scoreEl.textContent = scorePercent;
-    scoreTitleEl.textContent = scorePercent >= 70 ? 'Great Prompt!' : scorePercent >= 40 ? 'Needs Improvement' : 'Weak Prompt';
-    scoreDescEl.textContent = getScoreDescription(scorePercent);
+    // Update overall score
+    scoreEl.textContent = results.overall;
     
-    // Animate score circle
-    const scoreCircle = document.querySelector('.score-circle');
-    scoreCircle.style.background = `conic-gradient(var(--${getScoreLevel(scorePercent) === 'good' ? 'secondary' : getScoreLevel(scorePercent) === 'medium' ? 'warning' : 'danger'}) ${scorePercent}%, var(--bg-input) ${scorePercent}%)`;
+    // Score description based on value
+    if (results.overall >= 80) {
+        scoreTitleEl.textContent = '🌟 Excellent!';
+        scoreDescEl.textContent = results.aiPowered ? 'AI-verified high-quality prompt' : 'High-quality prompt detected';
+    } else if (results.overall >= 60) {
+        scoreTitleEl.textContent = '👍 Good';
+        scoreDescEl.textContent = 'Solid prompt with room for improvement';
+    } else if (results.overall >= 40) {
+        scoreTitleEl.textContent = '⚡ Needs Work';
+        scoreDescEl.textContent = 'Several areas need improvement';
+    } else {
+        scoreTitleEl.textContent = '🔧 Needs Revision';
+        scoreDescEl.textContent = 'Significant improvements recommended';
+    }
     
-    // Update category cards
+    // Add AI badge if applicable
+    if (results.aiPowered) {
+        scoreDescEl.innerHTML += ' <span style="background: linear-gradient(135deg, #6366f1, #10b981); padding: 2px 8px; border-radius: 100px; font-size: 0.7rem; margin-left: 8px;">🤖 AI Analysis</span>';
+    }
+    
+    // Update category scores
     categories.forEach(cat => {
-        const data = results[cat];
         const progress = document.getElementById(`${cat}-progress`);
         const detail = document.getElementById(`${cat}-detail`);
+        const score = results[cat].score;
         
-        progress.style.width = `${data.score}%`;
-        progress.className = `progress ${getScoreLevel(data.score)}`;
-        detail.textContent = data.detail;
+        progress.style.width = `${score}%`;
+        progress.style.background = score >= 70 ? 'var(--secondary)' : 
+                                    score >= 40 ? 'var(--warning)' : 'var(--danger)';
+        
+        detail.textContent = results[cat].detail || `Score: ${score}/100`;
     });
     
-    // Update suggestions
-    suggestionsListEl.innerHTML = results.suggestions
-        .map(s => `<li class="${s.good ? 'good' : ''}">${s.text}</li>`)
-        .join('');
+    // Show AI analysis insights if available
+    if (results.analysis) {
+        const intentText = results.analysis.intent ? 
+            `<div style="margin-bottom: 12px; padding: 12px; background: rgba(99, 102, 241, 0.1); border-radius: 8px;">
+                <strong>🎯 Detected Intent:</strong> ${results.analysis.intent}
+            </div>` : '';
+        suggestionsListEl.innerHTML = intentText;
+    } else {
+        suggestionsListEl.innerHTML = '';
+    }
+    
+    // Display suggestions
+    results.suggestions.forEach(suggestion => {
+        const li = document.createElement('li');
+        li.textContent = suggestion;
+        suggestionsListEl.appendChild(li);
+    });
     
     // Show improved prompt if available
     if (results.improvedPrompt) {
@@ -446,45 +487,24 @@ function updateUI(results) {
     } else {
         improvedSection.classList.add('hidden');
     }
+    
+    // Smooth scroll to results
+    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// Event Listeners
-promptInput.addEventListener('input', () => {
-    charCount.textContent = promptInput.value.length;
-});
-
-analyzeBtn.addEventListener('click', () => {
-    const prompt = promptInput.value;
-    const results = analyzePrompt(prompt);
-    updateUI(results);
-    
-    // Scroll to results
-    if (results) {
-        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-});
-
-// Allow Enter + Ctrl/Cmd to analyze
-promptInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault();
-        analyzeBtn.click();
-    }
-});
-
-// Copy improved prompt
-copyBtn.addEventListener('click', async () => {
+copyBtn.addEventListener('click', () => {
     const text = improvedPromptEl.textContent;
-    try {
-        await navigator.clipboard.writeText(text);
-        copyBtn.innerHTML = '<span class="btn-icon">✓</span> Copied!';
+    navigator.clipboard.writeText(text).then(() => {
+        copyBtn.innerHTML = '<span class="btn-icon">✅</span> Copied!';
         setTimeout(() => {
             copyBtn.innerHTML = '<span class="btn-icon">📋</span> Copy to Clipboard';
         }, 2000);
-    } catch (err) {
-        console.error('Failed to copy:', err);
-    }
+    });
 });
 
-// Initialize
-charCount.textContent = '0';
+// Keyboard shortcut
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        analyzeBtn.click();
+    }
+});
