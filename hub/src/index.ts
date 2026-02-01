@@ -747,10 +747,15 @@ app.get("/apps/*", async (c) => {
       });
     }
     
-    // Try index.html for directories
+    // Check if it's a directory with index.html
     const indexPath = join(filePath, 'index.html');
     const indexFile = Bun.file(indexPath);
     if (await indexFile.exists()) {
+      // IMPORTANT: Redirect to trailing slash to fix relative paths in HTML
+      // Without this, <link href="style.css"> would resolve to /apps/style.css instead of /apps/app-name/style.css
+      if (!path.endsWith('/')) {
+        return c.redirect(path + '/', 301);
+      }
       const content = await indexFile.arrayBuffer();
       return c.body(content, 200, {
         'Content-Type': 'text/html; charset=utf-8',
