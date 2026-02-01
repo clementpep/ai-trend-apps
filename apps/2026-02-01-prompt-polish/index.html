@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Polish ✨ - Analyze & Improve Your AI Prompts</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✨ Prompt Polish</h1>
+            <p class="subtitle">Analyze and improve your AI prompts instantly</p>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <label for="prompt-input">Your Prompt</label>
+                <textarea 
+                    id="prompt-input" 
+                    placeholder="Enter your AI prompt here... e.g., 'Write me some code for a website'"
+                    rows="6"
+                ></textarea>
+                <div class="char-count">
+                    <span id="char-count">0</span> characters
+                </div>
+                <button id="analyze-btn" class="primary-btn">
+                    <span class="btn-icon">🔍</span>
+                    Analyze Prompt
+                </button>
+            </div>
+
+            <div id="results" class="results-section hidden">
+                <div class="score-card">
+                    <div class="score-circle">
+                        <span id="score">0</span>
+                        <span class="score-label">/100</span>
+                    </div>
+                    <div class="score-text">
+                        <h3 id="score-title">Prompt Score</h3>
+                        <p id="score-description">Enter a prompt to see your score</p>
+                    </div>
+                </div>
+
+                <div class="analysis-grid">
+                    <div class="analysis-card" id="clarity-card">
+                        <div class="card-header">
+                            <span class="card-icon">💎</span>
+                            <h4>Clarity</h4>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" id="clarity-progress"></div>
+                        </div>
+                        <p class="card-detail" id="clarity-detail"></p>
+                    </div>
+
+                    <div class="analysis-card" id="specificity-card">
+                        <div class="card-header">
+                            <span class="card-icon">🎯</span>
+                            <h4>Specificity</h4>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" id="specificity-progress"></div>
+                        </div>
+                        <p class="card-detail" id="specificity-detail"></p>
+                    </div>
+
+                    <div class="analysis-card" id="structure-card">
+                        <div class="card-header">
+                            <span class="card-icon">🏗️</span>
+                            <h4>Structure</h4>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" id="structure-progress"></div>
+                        </div>
+                        <p class="card-detail" id="structure-detail"></p>
+                    </div>
+
+                    <div class="analysis-card" id="context-card">
+                        <div class="card-header">
+                            <span class="card-icon">📚</span>
+                            <h4>Context</h4>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress" id="context-progress"></div>
+                        </div>
+                        <p class="card-detail" id="context-detail"></p>
+                    </div>
+                </div>
+
+                <div class="suggestions-section">
+                    <h3>💡 Suggestions</h3>
+                    <ul id="suggestions-list"></ul>
+                </div>
+
+                <div class="improved-prompt-section hidden" id="improved-section">
+                    <h3>✨ Improved Version</h3>
+                    <div class="improved-prompt" id="improved-prompt"></div>
+                    <button id="copy-btn" class="secondary-btn">
+                        <span class="btn-icon">📋</span>
+                        Copy to Clipboard
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Built with 🌶️ by <a href="https://clementpep.cloud">El Tchoupinou</a> • Inspired by the Claude Code viral moment</p>
+            <p class="footer-note">No API calls — all analysis runs locally in your browser</p>
+        </footer>
+    </div>
+
+    <script src="analyzer.js"></script>
+</body>
+</html>
