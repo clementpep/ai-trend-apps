@@ -719,6 +719,61 @@ app.get("/api/apps", async (c) => {
   return c.json(apps);
 });
 
+/**
+ * OpenAI Proxy API - Secure endpoint for AI-powered apps
+ * Apps call this instead of OpenAI directly to keep the API key server-side
+ */
+app.post("/api/ai/chat", async (c) => {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    return c.json({ error: "OpenAI API not configured" }, 500);
+  }
+
+  try {
+    const body = await c.req.json();
+    const { messages, model = "gpt-4o-mini", max_tokens = 500 } = body;
+
+    if (!messages || !Array.isArray(messages)) {
+      return c.json({ error: "messages array required" }, 400);
+    }
+
+    // Limit to prevent abuse
+    if (max_tokens > 1000) {
+      return c.json({ error: "max_tokens limited to 1000" }, 400);
+    }
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        max_tokens,
+        temperature: 0.7,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error("OpenAI API error:", error);
+      return c.json({ error: "AI request failed" }, response.status);
+    }
+
+    const data = await response.json();
+    return c.json({
+      content: data.choices?.[0]?.message?.content || "",
+      model: data.model,
+      usage: data.usage,
+    });
+  } catch (error) {
+    console.error("AI proxy error:", error);
+    return c.json({ error: "Internal server error" }, 500);
+  }
+});
+
 // Serve static files from apps directories with custom handler
 // (serveStatic has issues with bundled Bun output)
 app.get("/apps/*", async (c) => {
