@@ -104,7 +104,7 @@ function renderHub(apps: AppInfo[]): string {
         <span class="stat-label">Hours Saved</span>
       </div>
       <div class="stat-card">
-        <span class="stat-number">5:00</span>
+        <span class="stat-number">2:00</span>
         <span class="stat-label">Daily Build Time</span>
       </div>
     </div>
