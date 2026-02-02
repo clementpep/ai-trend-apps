@@ -1,0 +1,9 @@
+{
+  "name": "ClickMind",
+  "description": "Can AI predict where you'll click? A game where the AI analyzes your click patterns and tries to guess your next move.",
+  "author": "El Tchoupinou",
+  "date": "2026-02-02",
+  "tags": ["game", "ai", "prediction", "behavior", "psychology"],
+  "usesAI": true,
+  "inspiration": "AI-driven UX prediction trends - predicting user behavior through pattern analysis"
+}
