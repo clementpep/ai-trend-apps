@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TinyVerse — Create Tiny Worlds</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌌 TinyVerse</h1>
+            <p class="tagline">Describe a world. Watch it come alive.</p>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <textarea id="world-description" placeholder="A cozy cabin in the snow with smoke rising from the chimney, surrounded by pine trees..."></textarea>
+                <button id="generate-btn" class="btn-primary">
+                    <span class="btn-text">✨ Create World</span>
+                    <span class="btn-loading">Generating...</span>
+                </button>
+            </div>
+
+            <div class="world-container" id="world-container">
+                <div class="world-placeholder">
+                    <div class="placeholder-icon">🪐</div>
+                    <p>Your universe awaits...</p>
+                </div>
+                <canvas id="world-canvas"></canvas>
+                <div class="world-elements" id="world-elements"></div>
+                <div class="world-info" id="world-info"></div>
+            </div>
+
+            <div class="examples">
+                <p>Try these:</p>
+                <button class="example-btn" data-prompt="A peaceful zen garden with a koi pond, bamboo, and cherry blossoms">🎋 Zen Garden</button>
+                <button class="example-btn" data-prompt="A mysterious cave with glowing crystals and an underground river">💎 Crystal Cave</button>
+                <button class="example-btn" data-prompt="A futuristic space station orbiting a purple nebula with passing asteroids">🚀 Space Station</button>
+                <button class="example-btn" data-prompt="An enchanted forest with fireflies, mushrooms, and a fairy circle">🧚 Enchanted Forest</button>
+            </div>
+        </main>
+
+        <footer>
+            <a href="/" class="back-to-hub">← Back to Hub</a>
+            <p>Built with 🧡 by <a href="https://github.com/openclaw/openclaw">OpenClaw</a></p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

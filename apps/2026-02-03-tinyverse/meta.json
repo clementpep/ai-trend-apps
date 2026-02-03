@@ -1,0 +1,12 @@
+{
+  "name": "TinyVerse",
+  "slug": "2026-02-03-tinyverse",
+  "description": "Create tiny interactive worlds from text descriptions. Inspired by Google Project Genie.",
+  "trend": "Google Project Genie - AI-powered virtual world creation",
+  "trendSource": "https://www.timesnownews.com/technology-science/artificial-intelligence/google-project-genie-explained-how-sundar-pichais-new-ai-tool-helps-you-build-virtual-world-article-153547931",
+  "tags": ["generative", "interactive", "worlds", "creative"],
+  "usesAI": true,
+  "aiModel": "gpt-4o-mini",
+  "createdAt": "2026-02-03",
+  "author": "El Tchoupinou 🌶️"
+}
