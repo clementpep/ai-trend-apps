@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Debate Arena</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚔️ AI Debate Arena</h1>
+            <p class="tagline">Two AI minds. One topic. Endless perspectives.</p>
+        </header>
+
+        <main>
+            <div class="topic-section">
+                <label for="topic">Choose a debate topic</label>
+                <div class="input-group">
+                    <input type="text" id="topic" placeholder="e.g., Is pineapple on pizza acceptable?" maxlength="200">
+                    <button id="start-btn" class="btn-primary">
+                        <span class="btn-text">Start Debate</span>
+                        <span class="btn-loader hidden">⏳</span>
+                    </button>
+                </div>
+                <div class="suggestions">
+                    <span class="suggestion" data-topic="Is remote work better than office work?">🏠 Remote vs Office</span>
+                    <span class="suggestion" data-topic="Should AI be regulated?">🤖 AI Regulation</span>
+                    <span class="suggestion" data-topic="Is social media harmful?">📱 Social Media</span>
+                    <span class="suggestion" data-topic="Tabs or spaces in code?">💻 Tabs vs Spaces</span>
+                </div>
+            </div>
+
+            <div class="arena hidden" id="arena">
+                <div class="debater debater-logic">
+                    <div class="debater-header">
+                        <div class="avatar">🧠</div>
+                        <div class="debater-info">
+                            <h3>LOGOS</h3>
+                            <span class="style">The Analyst</span>
+                        </div>
+                    </div>
+                    <div class="speech" id="speech-logic">
+                        <div class="typing-indicator">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vs-badge">VS</div>
+
+                <div class="debater debater-creative">
+                    <div class="debater-header">
+                        <div class="avatar">🎨</div>
+                        <div class="debater-info">
+                            <h3>PATHOS</h3>
+                            <span class="style">The Visionary</span>
+                        </div>
+                    </div>
+                    <div class="speech" id="speech-creative">
+                        <div class="typing-indicator">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="round-controls hidden" id="round-controls">
+                <div class="round-indicator">
+                    Round <span id="round-num">1</span> of 3
+                </div>
+                <button id="next-round-btn" class="btn-secondary">
+                    Next Round →
+                </button>
+                <button id="new-debate-btn" class="btn-outline hidden">
+                    🔄 New Debate
+                </button>
+            </div>
+
+            <div class="verdict hidden" id="verdict">
+                <h2>🏆 Debate Complete!</h2>
+                <p id="verdict-text">Both perspectives have been shared. What do you think?</p>
+            </div>
+        </main>
+
+        <footer>
+            <a href="/" class="back-to-hub">← Back to Hub</a>
+            <p>Built with 🧡 <a href="https://github.com/openclaw/openclaw">OpenClaw</a></p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
