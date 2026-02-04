@@ -1,0 +1,10 @@
+{
+  "name": "AI Debate Arena",
+  "slug": "ai-debate-arena",
+  "description": "Watch two AI personalities debate any topic - one analytical, one creative. Powered by real-time AI conversations.",
+  "date": "2025-02-04",
+  "trend": "AI agents communicating with each other",
+  "tags": ["ai", "debate", "conversation", "multi-agent"],
+  "usesAI": true,
+  "aiModel": "gpt-4o-mini"
+}
