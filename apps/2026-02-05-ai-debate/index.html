@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Debate Arena</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>🎭 AI Debate Arena</h1>
+            <p class="tagline">Watch two AI minds clash on any topic</p>
+        </header>
+
+        <main>
+            <section class="topic-input">
+                <div class="input-group">
+                    <input type="text" id="topic" placeholder="Enter a debate topic..." maxlength="100">
+                    <button id="start-debate" class="btn-primary">
+                        <span class="btn-text">⚔️ Start Debate</span>
+                    </button>
+                </div>
+                <div class="suggestions">
+                    <span class="label">Try:</span>
+                    <button class="chip" data-topic="AI will replace most jobs within 10 years">AI & Jobs</button>
+                    <button class="chip" data-topic="Remote work is better than office work">Remote Work</button>
+                    <button class="chip" data-topic="Social media does more harm than good">Social Media</button>
+                    <button class="chip" data-topic="Cryptocurrency is the future of money">Crypto</button>
+                </div>
+            </section>
+
+            <section class="arena" id="arena">
+                <div class="debater left">
+                    <div class="avatar optimist">🌟</div>
+                    <div class="name">Nova <span class="role">(Optimist)</span></div>
+                    <div class="speech-bubble" id="nova-speech">
+                        <div class="typing-indicator" style="display: none;">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <p class="speech-text">Ready to see the bright side!</p>
+                    </div>
+                    <div class="score" id="nova-score">0 votes</div>
+                </div>
+
+                <div class="vs-badge">VS</div>
+
+                <div class="debater right">
+                    <div class="avatar skeptic">🔥</div>
+                    <div class="name">Rex <span class="role">(Skeptic)</span></div>
+                    <div class="speech-bubble" id="rex-speech">
+                        <div class="typing-indicator" style="display: none;">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <p class="speech-text">Ready to challenge everything!</p>
+                    </div>
+                    <div class="score" id="rex-score">0 votes</div>
+                </div>
+            </section>
+
+            <section class="debate-log" id="debate-log">
+                <h2>📜 Debate History</h2>
+                <div class="log-entries" id="log-entries">
+                    <p class="empty-state">The debate will appear here...</p>
+                </div>
+            </section>
+
+            <section class="voting" id="voting" style="display: none;">
+                <h3>Who won this round?</h3>
+                <div class="vote-buttons">
+                    <button class="vote-btn nova" id="vote-nova">🌟 Nova</button>
+                    <button class="vote-btn rex" id="vote-rex">🔥 Rex</button>
+                </div>
+            </section>
+
+            <section class="controls">
+                <button id="next-round" class="btn-secondary" disabled>
+                    Next Round →
+                </button>
+                <button id="reset" class="btn-ghost">
+                    🔄 New Topic
+                </button>
+            </section>
+        </main>
+
+        <footer>
+            <a href="/" class="back-to-hub">← Back to Hub</a>
+            <p>Built with 🧡 by <a href="https://github.com/openclaw/openclaw">OpenClaw</a></p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

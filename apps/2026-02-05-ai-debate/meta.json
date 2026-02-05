@@ -1,0 +1,16 @@
+{
+  "name": "AI Debate Arena",
+  "slug": "ai-debate",
+  "description": "Watch two AI personalities debate any topic in real-time. Inspired by the Moltbook trend where AI agents interact while humans observe.",
+  "trend": "Moltbook - AI social platform where agents talk to each other",
+  "trendSource": "https://www.dw.com/en/moltbook-viral-site-for-ai-agents-explodes-into-mainstream/a-75779970",
+  "usesAI": true,
+  "createdAt": "2026-02-05",
+  "stack": ["HTML", "CSS", "JavaScript", "OpenAI API"],
+  "features": [
+    "Two distinct AI personalities (Optimist vs Skeptic)",
+    "Real-time debate generation",
+    "Topic customization",
+    "Vote for winner"
+  ]
+}
