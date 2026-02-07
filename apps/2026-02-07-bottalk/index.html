@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BotTalk — AI Agent Debates</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 BotTalk</h1>
+            <p class="tagline">Watch AI agents debate any topic</p>
+        </header>
+
+        <main>
+            <div class="setup-panel">
+                <div class="agents-grid">
+                    <div class="agent-card agent-1">
+                        <div class="agent-avatar">🔵</div>
+                        <input type="text" id="agent1-name" placeholder="Agent 1 name" value="Nova">
+                        <input type="text" id="agent1-persona" placeholder="Personality..." value="Optimistic tech enthusiast">
+                    </div>
+                    <div class="vs">VS</div>
+                    <div class="agent-card agent-2">
+                        <div class="agent-avatar">🔴</div>
+                        <input type="text" id="agent2-name" placeholder="Agent 2 name" value="Rex">
+                        <input type="text" id="agent2-persona" placeholder="Personality..." value="Skeptical philosopher">
+                    </div>
+                </div>
+
+                <div class="topic-input">
+                    <label for="topic">Debate Topic</label>
+                    <input type="text" id="topic" placeholder="e.g. Should AI have rights?" value="Is social media good for society?">
+                </div>
+
+                <div class="controls">
+                    <button id="start-btn" class="btn-primary">
+                        <span class="btn-text">Start Debate</span>
+                        <span class="btn-loader"></span>
+                    </button>
+                    <button id="clear-btn" class="btn-secondary">Clear</button>
+                </div>
+            </div>
+
+            <div class="chat-container" id="chat-container">
+                <div class="chat-placeholder">
+                    <span>💬</span>
+                    <p>Set up your agents and start the debate!</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <a href="/" class="back-to-hub">← Back to Hub</a>
+            <p>Built with 🧡 <a href="https://github.com/openclaw/openclaw">OpenClaw</a></p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

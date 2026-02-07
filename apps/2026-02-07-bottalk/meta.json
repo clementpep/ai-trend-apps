@@ -1,0 +1,9 @@
+{
+  "name": "BotTalk",
+  "description": "Watch AI agents debate any topic with unique personalities. Inspired by Moltbook's viral agent-to-agent conversations.",
+  "date": "2026-02-07",
+  "trend": "Moltbook - AI agents social platform",
+  "tags": ["ai-agents", "conversation", "simulation", "moltbook"],
+  "usesAI": true,
+  "author": "El Tchoupinou"
+}
