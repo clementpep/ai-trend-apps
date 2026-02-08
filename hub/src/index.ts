@@ -59,7 +59,7 @@ async function getApps(): Promise<AppInfo[]> {
 }
 
 /**
- * Generate the hub HTML page with Poup's AI Hub branding.
+ * Generate the hub HTML page with Poup's AI Hub branding + Phosphor Icons.
  */
 function renderHub(apps: AppInfo[]): string {
   const appCards = apps
@@ -72,7 +72,7 @@ function renderHub(apps: AppInfo[]): string {
         </div>
         <h2 class="app-name">${app.name}</h2>
         <div class="app-trend">
-          <span class="trend-icon">⚡</span>
+          <i class="ph-light ph-lightning"></i>
           <span>${app.trend}</span>
         </div>
         <p class="app-desc">${app.description}</p>
@@ -82,7 +82,7 @@ function renderHub(apps: AppInfo[]): string {
         </div>
         ` : ""}
         <div class="card-footer">
-          <span class="view-project">Explore →</span>
+          <span class="view-project">Explore <i class="ph-light ph-arrow-right"></i></span>
         </div>
       </a>
     `
@@ -92,14 +92,23 @@ function renderHub(apps: AppInfo[]): string {
   const statsSection = apps.length > 0 ? `
     <div class="stats-container">
       <div class="stat-card glass-card">
+        <div class="icon-glass-3d icon-glass-blue">
+          <i class="ph-light ph-cube"></i>
+        </div>
         <span class="stat-number">${apps.length}</span>
         <span class="stat-label">Apps Built</span>
       </div>
       <div class="stat-card glass-card">
+        <div class="icon-glass-3d icon-glass-purple">
+          <i class="ph-light ph-clock"></i>
+        </div>
         <span class="stat-number">${Math.floor(apps.length * 4.2)}</span>
         <span class="stat-label">Hours Saved</span>
       </div>
       <div class="stat-card glass-card">
+        <div class="icon-glass-3d icon-glass-green">
+          <i class="ph-light ph-timer"></i>
+        </div>
         <span class="stat-number">2:00</span>
         <span class="stat-label">Daily Build</span>
       </div>
@@ -110,7 +119,9 @@ function renderHub(apps: AppInfo[]): string {
     apps.length === 0
       ? `
     <div class="empty-state glass-card">
-      <div class="empty-icon">🚀</div>
+      <div class="icon-glass-3d icon-glass-blue" style="width: 5rem; height: 5rem; margin: 0 auto 1.5rem;">
+        <i class="ph-light ph-rocket-launch" style="font-size: 2.5rem;"></i>
+      </div>
       <h2>First App Coming Soon</h2>
       <p>Tomorrow at 2:00 AM Paris time, the first AI Trend App will be automatically built and deployed here.</p>
       <div class="countdown-hint">
@@ -132,6 +143,8 @@ function renderHub(apps: AppInfo[]): string {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Phosphor Icons (Light) -->
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/light/style.css">
   <style>
     /* ===== Poup's AI Hub - Branding Kit ===== */
     :root {
@@ -235,6 +248,57 @@ function renderHub(apps: AppInfo[]): string {
       border-color: rgba(255, 255, 255, 0.2);
     }
 
+    /* ===== 3D Glass Icon Container ===== */
+    .icon-glass-3d {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-top: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+      transform: perspective(500px) rotateX(5deg);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .icon-glass-3d:hover {
+      transform: perspective(500px) rotateX(0deg) translateY(-2px);
+    }
+
+    /* Icon color variants */
+    .icon-glass-blue {
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 0 25px hsla(217, 91%, 60%, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      border-color: hsla(217, 91%, 60%, 0.3);
+    }
+
+    .icon-glass-purple {
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 0 25px hsla(271, 81%, 56%, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      border-color: hsla(271, 81%, 56%, 0.3);
+    }
+
+    .icon-glass-green {
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 0 25px rgba(74, 222, 128, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      border-color: rgba(74, 222, 128, 0.3);
+    }
+
     /* ===== Header ===== */
     header {
       padding: 5rem 0 3rem;
@@ -256,7 +320,7 @@ function renderHub(apps: AppInfo[]): string {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.75rem;
+      font-size: 1.5rem;
       box-shadow: 0 8px 30px hsla(217, 91%, 60%, 0.4);
     }
 
@@ -301,10 +365,14 @@ function renderHub(apps: AppInfo[]): string {
     }
 
     .stat-card {
-      padding: 1.5rem 2.5rem;
+      padding: 1.5rem 2rem;
       text-align: center;
       position: relative;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
     }
 
     .stat-card::before {
@@ -323,19 +391,17 @@ function renderHub(apps: AppInfo[]): string {
     }
 
     .stat-number {
-      display: block;
-      font-size: 2.25rem;
+      font-size: 2rem;
       font-weight: 800;
       letter-spacing: -0.02em;
       background: linear-gradient(135deg, var(--glow-blue), var(--glow-purple));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      margin-bottom: 0.25rem;
     }
 
     .stat-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 600;
       color: var(--text-40);
       text-transform: uppercase;
@@ -358,6 +424,9 @@ function renderHub(apps: AppInfo[]): string {
       text-transform: uppercase;
       letter-spacing: 0.15em;
       color: var(--text-40);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     /* ===== Apps Grid ===== */
@@ -451,8 +520,8 @@ function renderHub(apps: AppInfo[]): string {
       width: fit-content;
     }
 
-    .trend-icon {
-      font-size: 0.875rem;
+    .app-trend i {
+      font-size: 1rem;
     }
 
     .app-desc {
@@ -491,6 +560,9 @@ function renderHub(apps: AppInfo[]): string {
       font-weight: 600;
       color: var(--glow-blue);
       transition: color 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .app-card:hover .view-project {
@@ -502,17 +574,6 @@ function renderHub(apps: AppInfo[]): string {
       text-align: center;
       padding: 5rem 2.5rem;
       margin-bottom: 5rem;
-    }
-
-    .empty-icon {
-      font-size: 4rem;
-      margin-bottom: 1.5rem;
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
     }
 
     .empty-state h2 {
@@ -593,6 +654,9 @@ function renderHub(apps: AppInfo[]): string {
       font-size: 0.75rem;
       font-weight: 500;
       color: var(--text-40);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     /* ===== Responsive ===== */
@@ -614,11 +678,17 @@ function renderHub(apps: AppInfo[]): string {
       }
 
       .stat-card {
-        padding: 1.25rem 1.75rem;
+        padding: 1.25rem 1.5rem;
       }
 
       .apps-grid {
         grid-template-columns: 1fr;
+      }
+
+      .icon-glass-3d {
+        width: 3rem;
+        height: 3rem;
+        font-size: 1.25rem;
       }
     }
   </style>
@@ -627,7 +697,9 @@ function renderHub(apps: AppInfo[]): string {
   <div class="container">
     <header>
       <div class="logo">
-        <div class="logo-icon">🧠</div>
+        <div class="logo-icon">
+          <i class="ph-light ph-brain"></i>
+        </div>
         <span class="logo-text">Poup's AI Hub</span>
       </div>
       <h1>Daily AI-Powered<br>Applications</h1>
@@ -642,7 +714,7 @@ function renderHub(apps: AppInfo[]): string {
     <main>
       ${apps.length > 0 ? `
       <div class="section-header">
-        <span class="section-title">Recent Apps</span>
+        <span class="section-title"><i class="ph-light ph-folder-open"></i> Recent Apps</span>
       </div>
       ` : ""}
       
@@ -657,7 +729,10 @@ function renderHub(apps: AppInfo[]): string {
         <div class="footer-brand">
           Built with 🌶️ <a href="https://github.com/clementpep" target="_blank">El Tchoupinou</a>
         </div>
-        <div class="footer-schedule">New app every day at 2:00 AM Paris time</div>
+        <div class="footer-schedule">
+          <i class="ph-light ph-clock"></i>
+          New app every day at 2:00 AM Paris time
+        </div>
       </div>
     </footer>
   </div>
@@ -714,7 +789,7 @@ app.post("/api/ai/chat", async (c) => {
     }
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
+      method: 'POST',
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${apiKey}`,
