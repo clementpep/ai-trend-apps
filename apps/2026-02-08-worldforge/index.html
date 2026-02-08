@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorldForge 🌍 - AI Adventure Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌍 WorldForge</h1>
+            <p class="tagline">Describe a world. Live an adventure.</p>
+        </header>
+
+        <!-- Setup Phase -->
+        <section id="setup-phase" class="phase">
+            <div class="card">
+                <h2>🎨 Create Your World</h2>
+                <div class="form-group">
+                    <label for="world-input">Describe your world in a few sentences:</label>
+                    <textarea id="world-input" placeholder="A cyberpunk city where memories can be traded like currency. Neon lights flicker above rain-soaked streets, and underground hackers fight against megacorporations..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="genre-select">Genre:</label>
+                    <select id="genre-select">
+                        <option value="fantasy">🧙 Fantasy</option>
+                        <option value="scifi">🚀 Sci-Fi</option>
+                        <option value="horror">👻 Horror</option>
+                        <option value="mystery">🔍 Mystery</option>
+                        <option value="cyberpunk" selected>🌆 Cyberpunk</option>
+                        <option value="postapocalyptic">☢️ Post-Apocalyptic</option>
+                    </select>
+                </div>
+                <button id="start-btn" class="btn-primary">
+                    <span class="btn-text">⚡ Forge My Adventure</span>
+                    <span class="btn-loading" hidden>
+                        <span class="spinner"></span> Creating world...
+                    </span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Adventure Phase -->
+        <section id="adventure-phase" class="phase" hidden>
+            <div class="story-container">
+                <div id="story-scroll">
+                    <!-- Story segments will be added here -->
+                </div>
+            </div>
+
+            <div id="choices-container" class="choices-container">
+                <!-- Choices will be added here -->
+            </div>
+
+            <div id="loading-indicator" class="loading-indicator" hidden>
+                <span class="spinner"></span>
+                <span>The story unfolds...</span>
+            </div>
+
+            <div class="adventure-controls">
+                <button id="restart-btn" class="btn-secondary">🔄 New Adventure</button>
+                <div id="turn-counter" class="turn-counter">Turn: 1</div>
+            </div>
+        </section>
+
+        <footer>
+            <a href="/" class="back-to-hub">← Back to Hub</a>
+            <p>Built with 🧡 by <a href="https://github.com/openclaw/openclaw">OpenClaw</a></p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
