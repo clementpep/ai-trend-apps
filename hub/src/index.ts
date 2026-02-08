@@ -1,13 +1,29 @@
 import { Hono } from "hono";
-import { serveStatic } from "hono/bun";
 import { logger } from "hono/logger";
 import { readdir, readFile } from "fs/promises";
-import { join } from "path";
+import { join, normalize } from "path";
 
 const app = new Hono();
+const APPS_DIR = join(process.cwd(), "apps");
+const SHARED_DIR = join(process.cwd(), "shared");
+
+const APPS_CACHE_TTL_MS = 30_000;
+const HUB_CACHE_TTL_MS = 30_000;
+
+type CacheEntry = {
+  content: ArrayBuffer;
+  contentType: string;
+  cacheControl: string;
+};
+
+let appsCache: { data: AppInfo[]; expiresAt: number } | null = null;
+let hubHtmlCache: { html: string; expiresAt: number } | null = null;
+const staticCache = new Map<string, CacheEntry>();
 
 // Middleware
-app.use("*", logger());
+if (process.env.NODE_ENV !== "production" || process.env.LOG_REQUESTS === "true") {
+  app.use("*", logger());
+}
 
 // Types
 interface AppInfo {
@@ -25,24 +41,28 @@ interface AppInfo {
  * Scan the apps directory and return metadata for each app.
  */
 async function getApps(): Promise<AppInfo[]> {
-  const appsDir = join(process.cwd(), "apps");
+  const now = Date.now();
+  if (appsCache && appsCache.expiresAt > now) {
+    return appsCache.data;
+  }
+
   const apps: AppInfo[] = [];
 
   try {
-    const folders = await readdir(appsDir);
+    const folders = await readdir(APPS_DIR, { withFileTypes: true });
 
     for (const folder of folders) {
-      if (folder.startsWith(".")) continue;
-      const metaPath = join(appsDir, folder, "meta.json");
+      if (!folder.isDirectory() || folder.name.startsWith(".")) continue;
+      const metaPath = join(APPS_DIR, folder.name, "meta.json");
       try {
         const meta = JSON.parse(await readFile(metaPath, "utf-8"));
         apps.push({
-          id: folder,
-          name: meta.name || folder,
-          date: meta.date || folder.slice(0, 10),
+          id: folder.name,
+          name: meta.name || folder.name,
+          date: meta.date || folder.name.slice(0, 10),
           trend: meta.trend || "Unknown trend",
           description: meta.description || "No description",
-          path: `/apps/${folder}`,
+          path: `/apps/${folder.name}`,
           stars: meta.stars || 0,
           techStack: meta.techStack || [],
         });
@@ -55,7 +75,62 @@ async function getApps(): Promise<AppInfo[]> {
   }
 
   // Sort by date descending
-  return apps.sort((a, b) => b.date.localeCompare(a.date));
+  const sortedApps = apps.sort((a, b) => b.date.localeCompare(a.date));
+  appsCache = {
+    data: sortedApps,
+    expiresAt: now + APPS_CACHE_TTL_MS,
+  };
+
+  return sortedApps;
+}
+
+function getMimeType(filePath: string): string {
+  const ext = filePath.split(".").pop()?.toLowerCase() || "";
+  const mimeTypes: Record<string, string> = {
+    html: "text/html; charset=utf-8",
+    css: "text/css; charset=utf-8",
+    js: "application/javascript; charset=utf-8",
+    json: "application/json; charset=utf-8",
+    png: "image/png",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    gif: "image/gif",
+    svg: "image/svg+xml",
+    ico: "image/x-icon",
+  };
+  return mimeTypes[ext] || "application/octet-stream";
+}
+
+async function serveCachedFile(filePath: string, cacheControl: string): Promise<CacheEntry | null> {
+  const cachedFile = staticCache.get(filePath);
+  if (cachedFile) {
+    return cachedFile;
+  }
+
+  const file = Bun.file(filePath);
+  if (!(await file.exists())) {
+    return null;
+  }
+
+  const entry: CacheEntry = {
+    content: await file.arrayBuffer(),
+    contentType: getMimeType(filePath),
+    cacheControl,
+  };
+
+  staticCache.set(filePath, entry);
+  return entry;
+}
+
+function resolveSafePath(baseDir: string, requestPath: string): string | null {
+  const normalizedPath = normalize(requestPath).replace(/^([.]{2}[\\/])+/, "");
+  const resolvedPath = join(baseDir, normalizedPath);
+
+  if (!resolvedPath.startsWith(baseDir)) {
+    return null;
+  }
+
+  return resolvedPath;
 }
 
 /**
@@ -755,7 +830,15 @@ function formatDate(dateStr: string): string {
 // Routes
 app.get("/", async (c) => {
   const apps = await getApps();
-  return c.html(renderHub(apps));
+  const now = Date.now();
+  if (!hubHtmlCache || hubHtmlCache.expiresAt <= now) {
+    hubHtmlCache = {
+      html: renderHub(apps),
+      expiresAt: now + HUB_CACHE_TTL_MS,
+    };
+  }
+
+  return c.html(hubHtmlCache.html);
 });
 
 app.get("/health", (c) => {
@@ -805,7 +888,7 @@ app.post("/api/ai/chat", async (c) => {
     if (!response.ok) {
       const error = await response.text();
       console.error("OpenAI API error:", error);
-      return c.json({ error: "AI request failed" }, response.status);
+      return c.json({ error: "AI request failed" }, 502);
     }
 
     const data = await response.json();
@@ -822,22 +905,18 @@ app.post("/api/ai/chat", async (c) => {
 
 // Serve shared static files (CSS, JS, etc.)
 app.get("/shared/*", async (c) => {
-  const path = c.req.path;
-  const filePath = join(process.cwd(), path);
+  const relativePath = c.req.path.replace(/^\/shared\//, "");
+  const filePath = resolveSafePath(SHARED_DIR, relativePath);
+  if (!filePath) {
+    return c.notFound();
+  }
   
   try {
-    const file = Bun.file(filePath);
-    if (await file.exists()) {
-      const content = await file.arrayBuffer();
-      const ext = filePath.split('.').pop()?.toLowerCase() || '';
-      const mimeTypes: Record<string, string> = {
-        'css': 'text/css; charset=utf-8',
-        'js': 'application/javascript; charset=utf-8',
-        'json': 'application/json; charset=utf-8',
-      };
-      return c.body(content, 200, {
-        'Content-Type': mimeTypes[ext] || 'application/octet-stream',
-        'Cache-Control': 'public, max-age=86400',
+    const entry = await serveCachedFile(filePath, "public, max-age=86400");
+    if (entry) {
+      return c.body(entry.content, 200, {
+        "Content-Type": entry.contentType,
+        "Cache-Control": entry.cacheControl,
       });
     }
     return c.notFound();
@@ -848,40 +927,30 @@ app.get("/shared/*", async (c) => {
 
 // Serve static files from apps directories
 app.get("/apps/*", async (c) => {
-  const path = c.req.path;
-  const filePath = join(process.cwd(), path);
+  const relativePath = c.req.path.replace(/^\/apps\//, "");
+  const filePath = resolveSafePath(APPS_DIR, relativePath);
+  if (!filePath) {
+    return c.notFound();
+  }
   
   try {
-    const file = Bun.file(filePath);
-    if (await file.exists()) {
-      const content = await file.arrayBuffer();
-      const ext = filePath.split('.').pop()?.toLowerCase() || '';
-      const mimeTypes: Record<string, string> = {
-        'html': 'text/html; charset=utf-8',
-        'css': 'text/css; charset=utf-8',
-        'js': 'application/javascript; charset=utf-8',
-        'json': 'application/json; charset=utf-8',
-        'png': 'image/png',
-        'jpg': 'image/jpeg',
-        'jpeg': 'image/jpeg',
-        'gif': 'image/gif',
-        'svg': 'image/svg+xml',
-        'ico': 'image/x-icon',
-      };
-      return c.body(content, 200, {
-        'Content-Type': mimeTypes[ext] || 'application/octet-stream',
+    const entry = await serveCachedFile(filePath, "public, max-age=3600");
+    if (entry) {
+      return c.body(entry.content, 200, {
+        "Content-Type": entry.contentType,
+        "Cache-Control": entry.cacheControl,
       });
     }
     
-    const indexPath = join(filePath, 'index.html');
-    const indexFile = Bun.file(indexPath);
-    if (await indexFile.exists()) {
-      if (!path.endsWith('/')) {
-        return c.redirect(path + '/', 301);
+    const indexPath = join(filePath, "index.html");
+    const indexEntry = await serveCachedFile(indexPath, "public, max-age=3600");
+    if (indexEntry) {
+      if (!c.req.path.endsWith("/")) {
+        return c.redirect(c.req.path + "/", 301);
       }
-      const content = await indexFile.arrayBuffer();
-      return c.body(content, 200, {
-        'Content-Type': 'text/html; charset=utf-8',
+      return c.body(indexEntry.content, 200, {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": indexEntry.cacheControl,
       });
     }
     
