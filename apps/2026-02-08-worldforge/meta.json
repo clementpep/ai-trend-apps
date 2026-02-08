@@ -1,0 +1,9 @@
+{
+  "name": "WorldForge",
+  "date": "2026-02-08",
+  "description": "AI-powered interactive text adventure generator. Describe a world, and the AI creates an immersive choose-your-own-adventure story.",
+  "trend": "World Models & Interactive AI (inspired by Google Project Genie)",
+  "usesAI": true,
+  "tags": ["text-adventure", "storytelling", "interactive", "world-building", "ai-generated"],
+  "emoji": "🌍"
+}
