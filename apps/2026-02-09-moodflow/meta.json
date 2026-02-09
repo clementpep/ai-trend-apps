@@ -1,0 +1,10 @@
+{
+  "name": "MoodFlow",
+  "description": "AI-powered mood journal that analyzes your emotions and reveals patterns in your feelings",
+  "date": "2026-02-09",
+  "trend": "AI Mood Journaling",
+  "trendSource": "ProductHunt AI Journaling Apps (Reflection, Rosebud, Mindsera)",
+  "usesAI": true,
+  "tags": ["journaling", "mood-tracking", "mental-health", "ai-analysis"],
+  "author": "El Tchoupinou"
+}

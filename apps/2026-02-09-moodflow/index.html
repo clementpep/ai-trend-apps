@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoodFlow — AI Mood Journal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/light/style.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Background halos -->
+  <div class="halo halo-1"></div>
+  <div class="halo halo-2"></div>
+
+  <main class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <div class="icon-glass-3d">
+          <i class="ph-light ph-heart-half"></i>
+        </div>
+        <div class="logo-text">
+          <h1>MoodFlow</h1>
+          <p>Your AI mood companion</p>
+        </div>
+      </div>
+      <div class="date-badge">
+        <i class="ph-light ph-calendar-dots"></i>
+        <span id="current-date"></span>
+      </div>
+    </header>
+
+    <!-- Mood Quick Select -->
+    <section class="mood-quick glass-card">
+      <h2>How are you feeling?</h2>
+      <div class="mood-buttons">
+        <button class="mood-btn" data-mood="amazing" data-emoji="✨">
+          <span class="mood-emoji">✨</span>
+          <span class="mood-label">Amazing</span>
+        </button>
+        <button class="mood-btn" data-mood="good" data-emoji="😊">
+          <span class="mood-emoji">😊</span>
+          <span class="mood-label">Good</span>
+        </button>
+        <button class="mood-btn" data-mood="okay" data-emoji="😐">
+          <span class="mood-emoji">😐</span>
+          <span class="mood-label">Okay</span>
+        </button>
+        <button class="mood-btn" data-mood="low" data-emoji="😔">
+          <span class="mood-emoji">😔</span>
+          <span class="mood-label">Low</span>
+        </button>
+        <button class="mood-btn" data-mood="stressed" data-emoji="😰">
+          <span class="mood-emoji">😰</span>
+          <span class="mood-label">Stressed</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Journal Entry -->
+    <section class="journal-section glass-card">
+      <h2><i class="ph-light ph-pencil-simple"></i> Tell me more...</h2>
+      <textarea 
+        id="journal-entry" 
+        placeholder="What's on your mind? Describe your day, your thoughts, anything..."
+        rows="5"
+      ></textarea>
+      <button id="analyze-btn" class="btn-primary">
+        <i class="ph-light ph-sparkle"></i>
+        Analyze with AI
+      </button>
+    </section>
+
+    <!-- AI Analysis Result -->
+    <section id="analysis-result" class="analysis-section glass-card hidden">
+      <div class="analysis-header">
+        <div class="icon-glass-3d small">
+          <i class="ph-light ph-brain"></i>
+        </div>
+        <h2>AI Insight</h2>
+      </div>
+      <div id="analysis-content" class="analysis-content">
+        <!-- AI response will be inserted here -->
+      </div>
+      <div class="analysis-meta">
+        <span class="detected-mood">
+          <i class="ph-light ph-smiley"></i>
+          Detected: <span id="detected-mood-text">--</span>
+        </span>
+        <span class="timestamp">
+          <i class="ph-light ph-clock"></i>
+          <span id="analysis-time">--</span>
+        </span>
+      </div>
+    </section>
+
+    <!-- Mood History -->
+    <section class="history-section glass-card">
+      <div class="history-header">
+        <h2><i class="ph-light ph-chart-line-up"></i> Recent Moods</h2>
+        <button id="clear-history" class="btn-ghost">
+          <i class="ph-light ph-trash"></i>
+        </button>
+      </div>
+      <div id="mood-history" class="mood-history">
+        <p class="empty-state">No entries yet. Start journaling!</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <a href="/" class="back-to-hub"><i class="ph-light ph-arrow-left"></i> Back to Hub</a>
+    <p>Built with 🌶️ by <a href="https://github.com/clementpep">El Tchoupinou</a></p>
+  </footer>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay hidden">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <p>Analyzing your mood...</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
