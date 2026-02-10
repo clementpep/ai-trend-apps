@@ -1,0 +1,10 @@
+{
+  "name": "VibeFlow",
+  "description": "Minimalist focus space for vibe coding — enhance your prompts with AI, stay in the zone with ambient sounds and a pomodoro timer.",
+  "trend": "Vibe Coding",
+  "trendSource": "ProductHunt, Scientific American, VentureBeat",
+  "date": "2026-02-10",
+  "usesAI": true,
+  "stack": ["HTML", "CSS", "JavaScript"],
+  "author": "El Tchoupinou"
+}
