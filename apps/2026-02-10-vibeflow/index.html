@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VibeFlow — Focus Space for Vibe Coding</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/light/style.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Background Halos -->
+  <div class="halo halo-1"></div>
+  <div class="halo halo-2"></div>
+
+  <main class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <div class="icon-glass-3d">
+          <i class="ph-light ph-wave-sine"></i>
+        </div>
+        <div class="logo-text">
+          <h1>VibeFlow</h1>
+          <span class="tagline">Focus space for vibe coding</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+      <!-- Left Column: Prompt Enhancer -->
+      <section class="glass-card prompt-section">
+        <div class="section-header">
+          <div class="icon-glass-3d small">
+            <i class="ph-light ph-magic-wand"></i>
+          </div>
+          <h2>Prompt Enhancer</h2>
+        </div>
+        
+        <div class="prompt-area">
+          <label for="rawPrompt">Your raw prompt</label>
+          <textarea id="rawPrompt" placeholder="e.g. make a button that submits the form..."></textarea>
+        </div>
+
+        <div class="context-row">
+          <label for="context">Context (optional)</label>
+          <input type="text" id="context" placeholder="React, Python, API endpoint...">
+        </div>
+
+        <button id="enhanceBtn" class="btn-primary">
+          <i class="ph-light ph-sparkle"></i>
+          <span>Enhance with AI</span>
+        </button>
+
+        <div class="prompt-area result-area" id="resultArea">
+          <label>Enhanced prompt</label>
+          <div id="enhancedPrompt" class="enhanced-output"></div>
+          <button id="copyBtn" class="btn-secondary" style="display: none;">
+            <i class="ph-light ph-copy"></i> Copy
+          </button>
+        </div>
+      </section>
+
+      <!-- Right Column: Timer & Sounds -->
+      <aside class="right-column">
+        <!-- Pomodoro Timer -->
+        <section class="glass-card timer-section">
+          <div class="section-header">
+            <div class="icon-glass-3d small purple">
+              <i class="ph-light ph-timer"></i>
+            </div>
+            <h2>Focus Timer</h2>
+          </div>
+
+          <div class="timer-display" id="timerDisplay">25:00</div>
+          
+          <div class="timer-modes">
+            <button class="mode-btn active" data-time="25">Focus</button>
+            <button class="mode-btn" data-time="5">Short</button>
+            <button class="mode-btn" data-time="15">Long</button>
+          </div>
+
+          <div class="timer-controls">
+            <button id="timerStart" class="btn-icon">
+              <i class="ph-light ph-play"></i>
+            </button>
+            <button id="timerReset" class="btn-icon">
+              <i class="ph-light ph-arrow-counter-clockwise"></i>
+            </button>
+          </div>
+        </section>
+
+        <!-- Ambient Sounds -->
+        <section class="glass-card sounds-section">
+          <div class="section-header">
+            <div class="icon-glass-3d small green">
+              <i class="ph-light ph-headphones"></i>
+            </div>
+            <h2>Ambient</h2>
+          </div>
+
+          <div class="sound-buttons">
+            <button class="sound-btn" data-sound="rain">
+              <i class="ph-light ph-cloud-rain"></i>
+              <span>Rain</span>
+            </button>
+            <button class="sound-btn" data-sound="lofi">
+              <i class="ph-light ph-music-notes"></i>
+              <span>Lo-fi</span>
+            </button>
+            <button class="sound-btn" data-sound="forest">
+              <i class="ph-light ph-tree"></i>
+              <span>Forest</span>
+            </button>
+            <button class="sound-btn" data-sound="cafe">
+              <i class="ph-light ph-coffee"></i>
+              <span>Café</span>
+            </button>
+          </div>
+
+          <div class="volume-control">
+            <i class="ph-light ph-speaker-low"></i>
+            <input type="range" id="volumeSlider" min="0" max="100" value="50">
+            <i class="ph-light ph-speaker-high"></i>
+          </div>
+        </section>
+
+        <!-- Session Stats -->
+        <section class="glass-card stats-section">
+          <div class="stats-grid">
+            <div class="stat">
+              <span class="stat-value" id="sessionsCount">0</span>
+              <span class="stat-label">Sessions</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value" id="promptsCount">0</span>
+              <span class="stat-label">Prompts</span>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <a href="/" class="back-to-hub"><i class="ph-light ph-arrow-left"></i> Back to Hub</a>
+    <p>Built with 🌶️ <a href="https://github.com/clementpep">El Tchoupinou</a></p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
