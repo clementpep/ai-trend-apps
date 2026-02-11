@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VibeCSS — Describe Your Vibe, Get CSS</title>
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/light/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Background Halos -->
+  <div class="halo halo-blue"></div>
+  <div class="halo halo-purple"></div>
+
+  <main class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="icon-glass-3d">
+        <i class="ph-light ph-paint-brush"></i>
+      </div>
+      <h1>VibeCSS</h1>
+      <p class="tagline">Describe your vibe. Get production-ready CSS.</p>
+    </header>
+
+    <!-- Input Section -->
+    <section class="glass-card input-section">
+      <label for="vibeInput">
+        <i class="ph-light ph-sparkle"></i>
+        Describe your vibe
+      </label>
+      <textarea 
+        id="vibeInput" 
+        placeholder="e.g., A calm ocean at sunset with warm orange tones and soft shadows..."
+        rows="4"
+      ></textarea>
+      
+      <div class="options-row">
+        <div class="option-group">
+          <label for="cssTarget">Target:</label>
+          <select id="cssTarget">
+            <option value="card">Card Component</option>
+            <option value="button">Button</option>
+            <option value="hero">Hero Section</option>
+            <option value="page">Full Page</option>
+          </select>
+        </div>
+        <div class="option-group">
+          <label for="cssFramework">Format:</label>
+          <select id="cssFramework">
+            <option value="vanilla">Vanilla CSS</option>
+            <option value="tailwind">Tailwind Classes</option>
+            <option value="variables">CSS Variables</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="generateBtn" class="btn-primary">
+        <i class="ph-light ph-magic-wand"></i>
+        Generate CSS
+      </button>
+    </section>
+
+    <!-- Output Section -->
+    <section class="glass-card output-section" id="outputSection" style="display: none;">
+      <div class="output-header">
+        <h2><i class="ph-light ph-code"></i> Generated CSS</h2>
+        <button id="copyBtn" class="btn-secondary">
+          <i class="ph-light ph-copy"></i>
+          Copy
+        </button>
+      </div>
+      
+      <pre id="codeOutput"><code></code></pre>
+      
+      <!-- Live Preview -->
+      <div class="preview-container">
+        <h3><i class="ph-light ph-eye"></i> Live Preview</h3>
+        <div id="livePreview" class="live-preview"></div>
+      </div>
+    </section>
+
+    <!-- Examples -->
+    <section class="examples-section">
+      <h3><i class="ph-light ph-lightbulb"></i> Try these vibes</h3>
+      <div class="examples-grid">
+        <button class="example-chip" data-vibe="Cyberpunk neon city at night with electric blue and hot pink glows">
+          🌃 Cyberpunk
+        </button>
+        <button class="example-chip" data-vibe="Minimalist zen garden with soft grays and natural bamboo textures">
+          🪨 Zen
+        </button>
+        <button class="example-chip" data-vibe="Retro 80s arcade with pixel-perfect shadows and CRT glow effects">
+          👾 Retro
+        </button>
+        <button class="example-chip" data-vibe="Luxury dark mode with gold accents and glass morphism effects">
+          ✨ Luxury
+        </button>
+        <button class="example-chip" data-vibe="Fresh spring morning with pastel colors and gentle gradients">
+          🌸 Spring
+        </button>
+        <button class="example-chip" data-vibe="Deep space nebula with cosmic purples and starfield particles">
+          🌌 Cosmic
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <a href="/" class="back-to-hub"><i class="ph-light ph-arrow-left"></i> Back to Hub</a>
+    <p>Built with 🌶️ by <a href="https://github.com/clementpep">El Tchoupinou</a></p>
+    <p class="trend-badge"><i class="ph-light ph-trend-up"></i> Inspired by the Vibe Coding trend</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
